@@ -3,30 +3,49 @@
 
 #include "Character/AuraEnemy.h"
 
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "AbilitySystem/AuraAttributeSet.h"
+#include "Aura/Aura.h"
+
+
 
 // Sets default values
 AAuraEnemy::AAuraEnemy()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+
+	AbilitySystemComponent = CreateDefaultSubobject<UAuraAbilitySystemComponent>("AbilitySystemComponent");
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+
+	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");
+	// AttributeSet
+	
 }
 
 // Called when the game starts or when spawned
 void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	check(AbilitySystemComponent);
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	
 }
 
-// Called every frame
-void AAuraEnemy::Tick(float DeltaTime)
+void AAuraEnemy::HighlightActor()
 {
-	Super::Tick(DeltaTime);
+	GetMesh()->SetRenderCustomDepth(true);
+	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
+	Weapon->SetRenderCustomDepth(true);
+	Weapon->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
 }
 
-// Called to bind functionality to input
-void AAuraEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AAuraEnemy::UnHighlightActor()
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	GetMesh()->SetRenderCustomDepth(false);
+	Weapon->SetRenderCustomDepth(false);
 }
 

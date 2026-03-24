@@ -1,9 +1,10 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Character/AuraCharacter.h"
-
+#include "AbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Player/AuraPlayerState.h"
 
 
 // Sets default values
@@ -21,10 +22,37 @@ AAuraCharacter::AAuraCharacter()
 	bUseControllerRotationRoll = false;
 }
 
+void AAuraCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	InitAbilitiyActorInfo();
+}
+
+void AAuraCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	InitAbilitiyActorInfo();
+	
+}
+
+
 // Called when the game starts or when spawned
 void AAuraCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	
+}
+
+void AAuraCharacter::InitAbilitiyActorInfo()
+{
+	AAuraPlayerState* AuraPS = GetPlayerState<AAuraPlayerState>();
+	check(AuraPS);
+	
+	AuraPS->GetAbilitySystemComponent()->InitAbilityActorInfo(AuraPS, this);
+	AbilitySystemComponent = AuraPS->GetAbilitySystemComponent();
+	AttributeSet = AuraPS->GetAttributeSet();
 	
 }
 

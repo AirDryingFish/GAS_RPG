@@ -8,6 +8,7 @@
 
 #include "AuraPlayerController.generated.h"
 
+class IEnemyInterface;
 class UInputMappingContext;
 UCLASS()
 class AURA_API AAuraPlayerController : public APlayerController
@@ -28,4 +29,11 @@ private:
 	TObjectPtr<UInputAction> MoveAction;
 
 	void Move(const struct FInputActionValue& Value);
+
+	void PlayerTick(float DeltaTime) override;
+
+	void CursorTrace();
+
+	TScriptInterface<IEnemyInterface> LastActor;
+	TScriptInterface<IEnemyInterface> ThisActor; 
 };

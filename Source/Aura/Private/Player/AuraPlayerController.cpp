@@ -1,9 +1,10 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Player/AuraPlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Interaction/EnemyInterface.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -57,6 +58,55 @@ void AAuraPlayerController::Move(const FInputActionValue& Value)
 		ControllerdPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
 		ControllerdPawn->AddMovementInput(RightDirection, InputAxisVector.X);
 	}
+	
+}
+
+void AAuraPlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+
+	CursorTrace();
+}
+
+void AAuraPlayerController::CursorTrace()
+{
+
+	FHitResult CursorTraceHit;
+	GetHitResultUnderCursor(ECC_Visibility, false, CursorTraceHit);
+	if (!CursorTraceHit.bBlockingHit)
+	{
+		return;
+	}
+	LastActor = ThisActor;
+	ThisActor = CursorTraceHit.GetActor();
+
+	if (LastActor == nullptr)
+	{
+		if (ThisActor != nullptr)
+		{
+			ThisActor->HighlightActor();
+			
+		}
+	}
+	else
+	{
+		if (ThisActor == nullptr)
+		{
+			LastActor->UnHighlightActor();
+		}
+		else
+		{
+			if (LastActor != ThisActor)
+			{
+				LastActor->UnHighlightActor();
+				ThisActor->HighlightActor();
+			}
+
+		}
+	}
+	
+
+	
 	
 }
 
