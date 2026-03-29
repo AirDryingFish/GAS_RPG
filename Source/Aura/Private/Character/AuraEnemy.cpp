@@ -26,13 +26,25 @@ AAuraEnemy::AAuraEnemy()
 	
 }
 
+int32 AAuraEnemy::GetPlayerLevel()
+{
+	return Level;
+}
+
 // Called when the game starts or when spawned
 void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	check(AbilitySystemComponent);
-	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	InitAbilitiyActorInfo();
 	
+}
+
+void AAuraEnemy::InitAbilitiyActorInfo()
+{
+	Super::InitAbilitiyActorInfo();
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 }
 
 void AAuraEnemy::HighlightActor()

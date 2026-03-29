@@ -3,6 +3,7 @@
 
 #include "Character/AuraCharacter.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
@@ -29,6 +30,7 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	InitAbilitiyActorInfo();
+	
 }
 
 void AAuraCharacter::OnRep_PlayerState()
@@ -37,6 +39,13 @@ void AAuraCharacter::OnRep_PlayerState()
 
 	InitAbilitiyActorInfo();
 	
+}
+
+int32 AAuraCharacter::GetPlayerLevel()
+{
+	AAuraPlayerState* AuraPS = GetPlayerState<AAuraPlayerState>();
+	check(AuraPS);
+	return AuraPS->GetPlayerLevel();
 }
 
 
@@ -54,7 +63,13 @@ void AAuraCharacter::InitAbilitiyActorInfo()
 	
 	AuraPS->GetAbilitySystemComponent()->InitAbilityActorInfo(AuraPS, this);
 	AbilitySystemComponent = AuraPS->GetAbilitySystemComponent();
+
+	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
+	
 	AttributeSet = AuraPS->GetAttributeSet();
+
+	// Default GEs（Primary/Secondary）先应用，再刷新 Overlay；否则 BroardcastInitialValues 读到的是 GE 之前的 Health/MaxHealth
+	InitializeDefaultAtrributes();
 
 	AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController());
 	if (AuraPlayerController)
@@ -64,7 +79,5 @@ void AAuraCharacter::InitAbilitiyActorInfo()
 			AuraHUD->InitOverlay(AuraPlayerController, AuraPS, AbilitySystemComponent, AttributeSet);
 		}
 	}
-	
-	
 }
 

@@ -16,10 +16,16 @@ public:
 	// Sets default values for this character's properties
 	AAuraEnemy();
 
+	virtual int32 GetPlayerLevel() override;
+
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void InitAbilitiyActorInfo() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
+	int32 Level = 1;
 
 public:
 	
@@ -28,4 +34,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	bool bHighlighted = false;
+
+private:
+
 };
